@@ -1,7 +1,7 @@
 <div align="center" width="100%">
     <h1>nmap-bootstrap-xsl</h1>
     <p>An Nmap XSL implementation with Bootstrap.<br>Allows Nmap XML port scan results to be converted into a beautiful HTML report.</p><p>
-    <a target="_blank" href="https://blog.lrvt.de/content/files/2022/07/nmap_report.html">Demo here</a><p>
+    <a target="_blank" href="https://haxxnet.github.io/nmap-bootstrap-xsl/report.html">> Demo HTML Report <</a><p>
     <a target="_blank" href="https://github.com/l4rm4nd"><img src="https://img.shields.io/badge/maintainer-LRVT-orange" /></a>
     <a target="_blank" href="https://GitHub.com/Haxxnet/nmap-bootstrap-xsl/graphs/contributors/"><img src="https://img.shields.io/github/contributors/Haxxnet/nmap-bootstrap-xsl.svg" /></a><br>
     <a target="_blank" href="https://GitHub.com/Haxxnet/nmap-bootstrap-xsl/commits/"><img src="https://img.shields.io/github/last-commit/Haxxnet/nmap-bootstrap-xsl.svg" /></a>
