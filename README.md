@@ -46,6 +46,8 @@ wget https://raw.githubusercontent.com/Haxxnet/nmap-bootstrap-xsl/main/nmap-boot
 xsltproc -o report.html nmap-bootstrap.xsl <nmap.xml>
 ````
 
+The resulting Nmap HTML report `report.html` can be directly opened with any web browser of your choice. 
+
 ### Applying XSL in advance
 
 If you have not yet started your Nmap port scan, you can also apply the bootstrap XSL in your Nmap CLI command as follows:
