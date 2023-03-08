@@ -13,6 +13,18 @@
     <a href="https://www.buymeacoffee.com/LRVT" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 </div>
 
+## 🔥 Features
+
+- Bootstrap Datatable filters and search bars
+- Export functionality like Copy, CSV, Excel and PDF
+- Automatic classification of web network services to a separate audit space with clickable HTTP/HTTPS URLs
+- Nmap CLI flag explanation via https://explainshell.com
+- Dynamic keyword highlighting via JS (e.g. keywords like password, login, insecure)
+- Quick glance at HTTP titles and SSL certificate information (CN, Expiry etc.)
+- Hostname and IP address listing of scan targets
+- Indication for encrypted network services (plaintext vs. SSL/STARTTLS)
+- Links to 3rd party services such as a CVE database by Pentest Factory, an SSL scan service by Qualys and an HTTP security header scan service by securityheaders.com
+    
 ## ✨ Requirements
 - xsltproc — command line xslt processor
 
@@ -51,4 +63,4 @@ The resulting Nmap XML file can be directly opened with a supported web browser.
 
 Many thanks to the following individuals:
 
-- ❤[honze-net](https://github.com/honze-net) for [nmap-bootstrap-xsl](https://github.com/honze-net/nmap-bootstrap-xsl)
+- ❤ [honze-net](https://github.com/honze-net) for [nmap-bootstrap-xsl](https://github.com/honze-net/nmap-bootstrap-xsl)
