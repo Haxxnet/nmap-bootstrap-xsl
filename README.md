@@ -2,14 +2,14 @@
     <h1>nmap-bootstrap-xsl</h1>
     <p>An Nmap XSL implementation with Bootstrap.<br>Allows Nmap XML port scan results to be converted into a beautiful HTML report.</p><p>
     <a target="_blank" href="https://blog.lrvt.de/content/files/2022/07/nmap_report.html">Demo here</a><p>
-    <a target="_blank" href="https://github.com/Haxxnet/nmap-boostrap-xsl/stargazers"><img src="https://img.shields.io/github/stars/Haxxnet/nmap-boostrap-xsl.svg?style=social&label=Star" /></a>
-    <a target="_blank" href="https://github.com/Haxxnet/nmap-boostrap-xsl/network/members"><img src="https://img.shields.io/github/forks/Haxxnet/nmap-boostrap-xsl.svg?style=social&label=Fork" /></a>
-    <a target="_blank" href="https://github.com/Haxxnet/nmap-boostrap-xsl/watchers"><img src="https://img.shields.io/github/watchers/Haxxnet/nmap-boostrap-xsl.svg?style=social&label=Watch" /></a><p>
     <a target="_blank" href="https://github.com/l4rm4nd"><img src="https://img.shields.io/badge/maintainer-LRVT-orange" /></a>
-    <a target="_blank" href="https://GitHub.com/Haxxnet/nmap-boostrap-xsl/graphs/contributors/"><img src="https://img.shields.io/github/contributors/Haxxnet/nmap-boostrap-xsl.svg" /></a><br>
-    <a target="_blank" href="https://GitHub.com/Haxxnet/nmap-boostrap-xsl/commits/"><img src="https://img.shields.io/github/last-commit/Haxxnet/nmap-boostrap-xsl.svg" /></a>
-    <a target="_blank" href="https://GitHub.com/Haxxnet/nmap-boostrap-xsl/issues/"><img src="https://img.shields.io/github/issues/Haxxnet/nmap-boostrap-xsl.svg" /></a>
-    <a target="_blank" href="https://github.com/Haxxnet/nmap-boostrap-xsl/issues?q=is%3Aissue+is%3Aclosed"><img src="https://img.shields.io/github/issues-closed/Haxxnet/nmap-boostrap-xsl.svg" /></a><p>
+    <a target="_blank" href="https://GitHub.com/Haxxnet/nmap-bootstrap-xsl/graphs/contributors/"><img src="https://img.shields.io/github/contributors/Haxxnet/nmap-bootstrap-xsl.svg" /></a><br>
+    <a target="_blank" href="https://GitHub.com/Haxxnet/nmap-bootstrap-xsl/commits/"><img src="https://img.shields.io/github/last-commit/Haxxnet/nmap-bootstrap-xsl.svg" /></a>
+    <a target="_blank" href="https://GitHub.com/Haxxnet/nmap-bootstrap-xsl/issues/"><img src="https://img.shields.io/github/issues/Haxxnet/nmap-bootstrap-xsl.svg" /></a>
+    <a target="_blank" href="https://github.com/Haxxnet/nmap-bootstrap-xsl/issues?q=is%3Aissue+is%3Aclosed"><img src="https://img.shields.io/github/issues-closed/Haxxnet/nmap-bootstrap-xsl.svg" /></a><br>
+        <a target="_blank" href="https://github.com/Haxxnet/nmap-bootstrap-xsl/stargazers"><img src="https://img.shields.io/github/stars/Haxxnet/nmap-bootstrap-xsl.svg?style=social&label=Star" /></a>
+    <a target="_blank" href="https://github.com/Haxxnet/nmap-bootstrap-xsl/network/members"><img src="https://img.shields.io/github/forks/Haxxnet/nmap-bootstrap-xsl.svg?style=social&label=Fork" /></a>
+    <a target="_blank" href="https://github.com/Haxxnet/nmap-bootstrap-xsl/watchers"><img src="https://img.shields.io/github/watchers/Haxxnet/nmap-bootstrap-xsl.svg?style=social&label=Watch" /></a><p>
     <a href="https://www.buymeacoffee.com/LRVT" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 </div>
 
