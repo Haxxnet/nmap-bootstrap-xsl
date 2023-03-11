@@ -144,7 +144,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
         </nav>
         <div class="container" style="width: 94%">
           <div class="jumbotron" style="margin-top: 80px; padding-top: 5px; padding-bottom: 30px; padding-left: 30px; padding-right: 30px">
-            <h2>Portscan Results</h2>
+            <h2>Nmap Port Scanning Results</h2>
             <h2><small>Nmap Version <xsl:value-of select="/nmaprun/@version"/>
             <br/><xsl:value-of select="/nmaprun/@startstr"/> – <xsl:value-of select="/nmaprun/runstats/finished/@timestr"/></small></h2>
             <pre style="white-space:pre-wrap; word-wrap:break-word;"><a target="_blank"><xsl:attribute name="href">https://explainshell.com/explain?cmd=<xsl:value-of select="/nmaprun/@args"/></xsl:attribute><xsl:value-of select="/nmaprun/@args"/></a></pre>
@@ -169,7 +169,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
                 <div>
                     <textarea style="width: 100%;" title="Insert comma separated keywords to be highlighted" rows = "1" name = "keywords" placeholder="sha1,password,..." id="keyword-input">sha1,login,password,md5</textarea>
                 </div>
-                <div style="margin-top: 5px">
+                <div style="margin-top: 2px">
                     <button title="Keyword highlighing in 'Open Services'" id="highlight-button" onclick="highlight()">Highlight Keywords</button>
                     <button title="Reset keyword highlighing" id="reset-highlight-button" onclick="document.location.reload(true);">Reset</button>
                 </div>
