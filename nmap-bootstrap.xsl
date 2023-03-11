@@ -88,6 +88,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
                       extend: 'excelHtml5',
                       exportOptions: { orthogonal: 'export' },
                       autoFilter: true,
+                      title: '',
                   },
                   {
                       extend: 'pdfHtml5',
@@ -494,6 +495,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
                     extend: 'excelHtml5',
                     exportOptions: { orthogonal: 'export' },
                     autoFilter: true,
+                    title: '',
                 },
                 {
                     extend: 'pdfHtml5',
@@ -532,6 +534,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
                     extend: 'excelHtml5',
                     exportOptions: { orthogonal: 'export' },
                     autoFilter: true,
+                    title: '',
                 },
                 {
                     extend: 'pdfHtml5',
