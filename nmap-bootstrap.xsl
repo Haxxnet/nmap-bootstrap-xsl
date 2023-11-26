@@ -289,7 +289,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
               </thead>
               <tbody>
                 <xsl:for-each select="/nmaprun/host">
-                  <xsl:for-each select="ports/port[starts-with(service/@name, 'http') and state/@state='open']">
+                  <xsl:for-each select="ports/port[starts-with(service/@name, 'http') and state/@state='open' and @protocol='tcp']">
 
                     <tr>
                       <!--<td><input name="select_all" value="1" type="checkbox"></input></td>-->
