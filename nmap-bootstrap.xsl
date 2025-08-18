@@ -293,7 +293,38 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
                         <xsl:if test="count(script/elem[@key='sig_algo']) > 0"><br/>SigAlgo: <i><xsl:value-of select="script/elem[@key='sig_algo']"/></i></xsl:if>
                       </td>
                       <td><xsl:choose><xsl:when test="count(script[@id='http-title']/elem[@key='title']) > 0"><i><xsl:value-of select="script[@id='http-title']/elem[@key='title']"/></i></xsl:when><xsl:otherwise><xsl:if test="count(script[@id='http-title']/@output) > 0"><i><xsl:value-of select="script[@id='http-title']/@output"/></i></xsl:if></xsl:otherwise></xsl:choose></td>
-                      <td><xsl:value-of select="service/cpe"/></td>
+                      <td>
+                        <!-- derive from this row's service/cpe -->
+                        <xsl:variable name="c22" select="service/cpe"/>
+                        <xsl:variable name="afterA" select="substring-after($c22, 'cpe:/a:')"/>
+                        <xsl:variable name="vendor" select="substring-before($afterA, ':')"/>
+                        <xsl:variable name="afterVendor" select="substring-after($afterA, ':')"/>
+                        <xsl:variable name="product" select="substring-before($afterVendor, ':')"/>
+                        <xsl:variable name="verRaw" select="substring-after($afterVendor, ':')"/>
+                        <!-- normalize version (strip packaging suffix like '-1') -->
+                        <xsl:variable name="verNorm" select="substring-before(concat($verRaw,'-'), '-')"/>
+                        <xsl:variable name="verFinal" select="normalize-space($verNorm)"/>
+
+                        <xsl:choose>
+                          <xsl:when test="string($c22)">
+                            <xsl:choose>
+                              <!-- hyperlink only if a version exists -->
+                              <xsl:when test="string-length($verFinal) &gt; 0">
+                                <a title="Click to find known CVEs" target="_blank">
+                                  <xsl:attribute name="href">
+                                    https://cve.pentestfactory.de/?cpe=<xsl:value-of select="$c22"/>
+                                  </xsl:attribute>
+                                  <xsl:value-of select="$c22"/>
+                                </a>
+                              </xsl:when>
+                              <!-- no version: show plain text -->
+                              <xsl:otherwise><xsl:value-of select="$c22"/></xsl:otherwise>
+                            </xsl:choose>
+                          </xsl:when>
+                          <xsl:otherwise>unknown</xsl:otherwise>
+                        </xsl:choose>
+                      </td>
+
                     </tr>
                   </xsl:for-each>
                 </xsl:for-each>
@@ -466,7 +497,26 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
                     </td>
 
                     <!-- first matching CPE in this group (if any) -->
-                    <td><xsl:value-of select="$cpe22"/></td>
+                    <td>
+                      <xsl:choose>
+                        <xsl:when test="string($cpe22)">
+                          <xsl:choose>
+                            <!-- hyperlink only if a version exists -->
+                            <xsl:when test="string-length($verFinal) &gt; 0">
+                              <a title="Click to find known CVEs" target="_blank">
+                                <xsl:attribute name="href">
+                                  https://cve.pentestfactory.de/?cpe=<xsl:value-of select="$cpe22"/>
+                                </xsl:attribute>
+                                <xsl:value-of select="$cpe22"/>
+                              </a>
+                            </xsl:when>
+                            <!-- no version: show plain text -->
+                            <xsl:otherwise><xsl:value-of select="$cpe22"/></xsl:otherwise>
+                          </xsl:choose>
+                        </xsl:when>
+                        <xsl:otherwise>unknown</xsl:otherwise>
+                      </xsl:choose>
+                    </td>
                   </tr>
                 </xsl:for-each>
               </tbody>
