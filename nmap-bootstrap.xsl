@@ -408,7 +408,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
                 <tr>
                   <th>Product</th>
                   <th>Version</th>
-                  <th>Hosts (unique)</th>
+                  <th>Count</th>
                   <th>Host List</th>
                   <th>CPE</th>
                 </tr>
@@ -450,6 +450,14 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
                       <xsl:otherwise>*</xsl:otherwise>
                     </xsl:choose>
                   </xsl:variable>
+
+                  <!-- unique service instances (host+protocol+port) for this Product|Version -->
+                  <xsl:variable name="svcHostPortDistinct"
+                    select="$services[generate-id() =
+                            generate-id(key('svcByProdVerHostPort',
+                              concat(@product,'|',@version,'|',
+                                     ancestor::host/address/@addr,'|',
+                                     ../@protocol,'|', ../@portid))[1])]"/>
 
                   <tr>
                     <td><xsl:value-of select="@product"/></td>
