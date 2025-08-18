@@ -6,6 +6,32 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="html" encoding="utf-8" indent="yes" doctype-system="about:legacy-compat"/>
+  <!-- Services that have both product and version -->
+  <xsl:key name="svcByProduct"
+           match="nmaprun/host/ports/port[state/@state='open']/service[@product and @version]"
+           use="@product"/>
+
+  <!-- Distinct Product|Version groups -->
+  <xsl:key name="svcByProdVer"
+           match="nmaprun/host/ports/port[state/@state='open']/service[@product and @version]"
+           use="concat(@product,'|',@version)"/>
+
+  <!-- Distinct Product|Version|Host groups (for unique host counting) -->
+  <xsl:key name="svcByProdVerHost"
+           match="nmaprun/host/ports/port[state/@state='open']/service[@product and @version]"
+           use="concat(@product,'|',@version,'|', ancestor::host/address/@addr)"/>
+
+  <!-- Distinct Product|Version|Host|Port groups (for host list with ports) -->
+  <xsl:key name="svcByProdVerHostPort"
+           match="nmaprun/host/ports/port[state/@state='open']/service[@product and @version]"
+           use="concat(@product,'|',@version,'|',
+                       ancestor::host/address/@addr,'|',
+                       ../@protocol,'|',../@portid)"/>
+  <!-- All open SSH services (name="ssh") -->
+  <xsl:key name="sshSvcs"
+           match="nmaprun/host/ports/port[state/@state='open']/service[@name='ssh']"
+           use="1"/>
+
   <xsl:template match="/">
     <html lang="en">
       <head>
@@ -135,6 +161,10 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
                 <li><a href="#scannedhosts">Scanned Hosts</a></li>
                 <li><a href="#openservices">Open Services</a></li>
                 <li><a href="#webservices">Web Services</a></li>
+                <li><a href="#productversions">Product Versions</a></li>
+                <xsl:if test="count(/nmaprun/host/ports/port[state/@state='open']/service[@name='ssh']) &gt; 0">
+                  <li><a href="#ssh-auth">SSH Authentication</a></li>
+                </xsl:if>
                 <li><a href="#onlinehosts">Online Hosts</a></li>
                 <li><a href="#" style="pointer-events: none; cursor: default;">|</a></li>
                 <li><a href="https://www.pentestfactory.de/schwachstellendatenbank/" target="_blank" title="Vulnerability Database by Pentest Factory"><span class="glyphicon glyphicon-new-window " style="color: #f7a90a;"></span> CVEs</a></li>
@@ -339,6 +369,214 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
               </tbody>
             </table>
           </div>
+
+          <h2 id="productversions" class="target">Product Versions</h2>
+          <div class="table-responsive">
+            <table id="table-product-versions" class="table table-striped dataTable" role="grid">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Version</th>
+                  <th>Hosts (unique)</th>
+                  <th>Host List</th>
+                  <th>CPE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- One row per distinct Product|Version -->
+                <xsl:for-each
+                  select="/nmaprun/host/ports/port[state/@state='open']/service[@product and @version]
+                          [generate-id() = generate-id(key('svcByProdVer', concat(@product,'|',@version))[1])]"
+                >
+                  <xsl:sort select="@product"/>
+                  <xsl:sort select="@version"/>
+
+                  <!-- capture the group -->
+                  <xsl:variable name="pv" select="concat(@product,'|',@version)"/>
+                  <xsl:variable name="services" select="key('svcByProdVer', $pv)"/>
+
+                  <!-- unique hosts for this Product|Version -->
+                  <xsl:variable name="uniqHosts"
+                    select="$services[generate-id() =
+                            generate-id(key('svcByProdVerHost',
+                                            concat(@product,'|',@version,'|', ancestor::host/address/@addr))[1])]"/>
+
+                  <!-- pick first app CPE inside this group (if any) -->
+                  <xsl:variable name="cpe22" select="$services/cpe[starts-with(., 'cpe:/a:')][1]"/>
+
+                  <!-- Build cpe:2.3 from cpe:/a:vendor:product:version (fallbacks to * if missing) -->
+                  <xsl:variable name="afterA" select="substring-after($cpe22, 'cpe:/a:')"/>
+                  <xsl:variable name="vendor" select="substring-before($afterA, ':')"/>
+                  <xsl:variable name="afterVendor" select="substring-after($afterA, ':')"/>
+                  <xsl:variable name="product" select="substring-before($afterVendor, ':')"/>
+                  <xsl:variable name="verRaw" select="substring-after($afterVendor, ':')"/>
+                  <!-- normalize version: strip packaging suffix like '-1' -->
+                  <xsl:variable name="verNorm" select="substring-before(concat($verRaw,'-'), '-')"/>
+                  <xsl:variable name="verFinal" select="normalize-space($verNorm)"/>
+                  <xsl:variable name="verOrStar">
+                    <xsl:choose>
+                      <xsl:when test="string-length($verFinal) &gt; 0"><xsl:value-of select="$verFinal"/></xsl:when>
+                      <xsl:otherwise>*</xsl:otherwise>
+                    </xsl:choose>
+                  </xsl:variable>
+
+                  <tr>
+                    <td><xsl:value-of select="@product"/></td>
+                    <td><xsl:value-of select="@version"/></td>
+
+                    <!-- count of unique hosts -->
+                    <td><xsl:value-of select="count($uniqHosts)"/></td>
+
+                    <td>
+                      <!-- unique host+port list for this Product|Version -->
+                      <xsl:for-each select="key('svcByProdVer', $pv)
+                                            [generate-id() =
+                                             generate-id(key('svcByProdVerHostPort',
+                                               concat(@product,'|',@version,'|',
+                                                      ancestor::host/address/@addr,'|',
+                                                      ../@protocol,'|',../@portid))[1])]">
+                        <xsl:sort select="ancestor::host/hostnames/hostname[1]/@name"/>
+                        <xsl:sort select="ancestor::host/address/@addr"/>
+                        <xsl:sort select="../@protocol"/>
+                        <xsl:sort select="../@portid" data-type="number"/>
+
+                        <xsl:variable name="h"  select="ancestor::host"/>
+                        <xsl:variable name="ip" select="$h/address/@addr"/>
+                        <xsl:variable name="hn" select="$h/hostnames/hostname[1]/@name"/>
+                        <xsl:variable name="proto" select="translate(../@protocol, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
+                        <xsl:variable name="port"  select="../@portid"/>
+
+                        <!-- link to Online Hosts anchor -->
+                        <a>
+                          <xsl:attribute name="href">
+                            #port-<xsl:value-of select="translate($ip, '.', '-')"/>-<xsl:value-of select="$port"/>
+                          </xsl:attribute>
+                          <xsl:choose>
+                            <xsl:when test="string-length($hn) &gt; 0">
+                              <xsl:value-of select="$hn"/> (<xsl:value-of select="$ip"/>)
+                            </xsl:when>
+                            <xsl:otherwise>
+                              <xsl:value-of select="$ip"/>
+                            </xsl:otherwise>
+                          </xsl:choose>
+                          <xsl:text> [</xsl:text><xsl:value-of select="$proto"/><xsl:text>/</xsl:text><xsl:value-of select="$port"/><xsl:text>]</xsl:text>
+                        </a>
+                        <xsl:if test="position() != last()">, </xsl:if>
+                      </xsl:for-each>
+                    </td>
+
+                    <!-- first matching CPE in this group (if any) -->
+                    <td><xsl:value-of select="$cpe22"/></td>
+                  </tr>
+                </xsl:for-each>
+              </tbody>
+            </table>
+          </div>
+
+          <xsl:if test="count(/nmaprun/host/ports/port[state/@state='open']/service[@name='ssh']) &gt; 0">
+          <h2 id="ssh-auth" class="target">SSH Authentication</h2>
+          <div class="table-responsive">
+            <table id="table-ssh-auth" class="table table-striped dataTable" role="grid">
+              <thead>
+                <tr>
+                  <th>Host</th>
+                  <th>IP</th>
+                  <th>Port</th>
+                  <th>Product</th>
+                  <th>Version</th>
+                  <th>Auth Methods</th>
+                </tr>
+              </thead>
+              <tbody>
+                <xsl:for-each select="key('sshSvcs', 1)">
+                  <xsl:sort select="ancestor::host/hostnames/hostname[1]/@name"/>
+                  <xsl:sort select="ancestor::host/address/@addr"/>
+                  <xsl:sort select="../@portid" data-type="number"/>
+
+                  <xsl:variable name="host" select="ancestor::host"/>
+                  <xsl:variable name="ip"   select="$host/address/@addr"/>
+                  <xsl:variable name="hn"   select="$host/hostnames/hostname[1]/@name"/>
+                  <xsl:variable name="port" select="../@portid"/>
+                  <xsl:variable name="proto" select="translate(../@protocol,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
+
+                  <!-- Gather ssh-auth-methods results -->
+                  <xsl:variable name="methods" select="../script[@id='ssh-auth-methods']/table[@key='Supported authentication methods']/elem"/>
+                  <xsl:variable name="hasPassword" select="$methods[translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')='password']"/>
+                  <xsl:variable name="hasPublickey" select="$methods[translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')='publickey']"/>
+                  <xsl:variable name="hasKI" select="$methods[translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')='keyboard-interactive']"/>
+
+                  <!-- Classification rules:
+                       - Public key only    => ONLY 'publickey' present
+                       - Password allowed   => 'password' or 'keyboard-interactive' present
+                       - Unknown            => no ssh-auth-methods result -->
+                  <xsl:variable name="class">
+                    <xsl:choose>
+                      <xsl:when test="count($methods) &gt; 0 and count($methods)=count($methods[translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='publickey'])">
+                        Public key only
+                      </xsl:when>
+                      <xsl:when test="$hasPassword or $hasKI">
+                        Password allowed
+                      </xsl:when>
+                      <xsl:otherwise>Unknown</xsl:otherwise>
+                    </xsl:choose>
+                  </xsl:variable>
+
+                  <tr>
+                  <!-- Host (plain text only) -->
+                  <td>
+                    <xsl:choose>
+                      <xsl:when test="string-length($hn) &gt; 0">
+                        <xsl:value-of select="$hn"/>
+                      </xsl:when>
+                      <xsl:otherwise>-</xsl:otherwise>
+                    </xsl:choose>
+                  </td>
+
+                  <!-- IP (linked to host anchor) -->
+                  <td>
+                    <a>
+                      <xsl:attribute name="href">
+                        #onlinehosts-<xsl:value-of select="translate($ip,'.','-')"/>
+                      </xsl:attribute>
+                      <xsl:value-of select="$ip"/>
+                    </a>
+                  </td>
+
+                  <!-- Port (linked to port anchor) -->
+                  <td>
+                    <a>
+                      <xsl:attribute name="href">
+                        #port-<xsl:value-of select="translate($ip,'.','-')"/>-<xsl:value-of select="$port"/>
+                      </xsl:attribute>
+                      <xsl:value-of select="$proto"/>/<xsl:value-of select="$port"/>
+                    </a>
+                  </td>
+
+                    <!-- Product -->
+                    <td><xsl:value-of select="@product"/></td>
+
+                    <!-- Version -->
+                    <td><xsl:value-of select="@version"/></td>
+
+                    <!-- Auth Methods (verbatim from NSE) -->
+                    <td>
+                      <xsl:choose>
+                        <xsl:when test="count($methods) &gt; 0">
+                          <xsl:for-each select="$methods">
+                            <xsl:value-of select="."/>
+                            <xsl:if test="position()!=last()">, </xsl:if>
+                          </xsl:for-each>
+                        </xsl:when>
+                        <xsl:otherwise>-</xsl:otherwise>
+                      </xsl:choose>
+                    </td>
+
+                  </tr>
+                </xsl:for-each>
+              </tbody>
+            </table>
+          </div>
+        </xsl:if>
 
           <h2 id="onlinehosts" class="target">Online Hosts</h2>
           <xsl:for-each select="/nmaprun/host[status/@state='up']">
@@ -561,6 +799,46 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
             "columnDefs": [
               { "targets": [1], "type": "ip-address" },
             ],
+          });
+        </script>
+        <script>
+          $(document).ready(function() {
+            $('#table-product-versions').DataTable();
+          });
+          $('#table-product-versions').DataTable({
+            "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+            "order": [[ 0, 'asc' ], [1, 'asc' ]],  // Product, then Version
+            dom: 'lBfrtip',
+            stateSave: true,
+            buttons: [
+              { extend: 'copyHtml5', exportOptions: { orthogonal: 'export' } },
+              { extend: 'csvHtml5',  exportOptions: { orthogonal: 'export' } },
+              { extend: 'excelHtml5', exportOptions: { orthogonal: 'export' }, autoFilter: true, title: '' },
+              { extend: 'pdfHtml5', orientation: 'landscape', pageSize: 'LEGAL', download: 'open',
+                exportOptions: { columns: [0,1,2,3,4,5] } }
+            ],
+          });
+        </script>
+        <script>
+          $(function () {
+            if ($('#table-ssh-auth').length) {
+              $('#table-ssh-auth').DataTable({
+                lengthMenu: [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+                order: [[0, 'asc'], [2, 'asc']], // Host, then Port
+                columnDefs: [
+                  { targets: 1, type: 'ip-address' } // IP column
+                ],
+                dom: 'lBfrtip',
+                stateSave: true,
+                buttons: [
+                  { extend: 'copyHtml5',  exportOptions: { columns: [0,1,2,3,4,5] } },
+                  { extend: 'csvHtml5',   exportOptions: { columns: [0,1,2,3,4,5] } },
+                  { extend: 'excelHtml5', exportOptions: { columns: [0,1,2,3,4,5] }, autoFilter: true, title: '' },
+                  { extend: 'pdfHtml5',   orientation: 'landscape', pageSize: 'LEGAL', download: 'open',
+                    exportOptions: { columns: [0,1,2,3,4,5] } }
+                ]
+              });
+            }
           });
         </script>
       </body>
