@@ -18,6 +18,7 @@
 - Bootstrap Datatable filters and search bars
 - Export functionality like Copy, CSV, Excel and PDF
 - Automatic classification of web network services to a separate audit space with clickable HTTP/HTTPS URLs
+- Automatic classification of enumerated product versions to a separate audit space with clickable CPE strings that link to publicly known CVEs
 - Nmap CLI flag explanation via https://explainshell.com
 - Dynamic keyword highlighting via JS (e.g. keywords like password, login, insecure)
 - Quick glance at HTTP titles and SSL certificate information (CN, Expiry etc.)
