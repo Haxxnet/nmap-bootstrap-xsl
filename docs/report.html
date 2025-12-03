@@ -49,7 +49,7 @@
               let content = document.getElementById('table-services').innerHTML;
               document.getElementById('table-services').innerHTML = transformContent(content, keywords)
               $('#table-services').DataTable( {
-              "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+              "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ],
               "order": [[ 0, 'desc' ]],
               "columnDefs": [
                 { "targets": [0], "orderable": true },
@@ -339,7 +339,7 @@
 <tr>
 <td>Apache httpd</td>
 <td>2.4.6</td>
-<td>2</td>
+<td>1</td>
 <td>
 <a href="#port-45-33-49-119-80">scanme2.nmap.org (45.33.49.119)
                              [TCP/80]</a>, <a href="#port-45-33-49-119-443">scanme2.nmap.org (45.33.49.119)
@@ -680,7 +680,7 @@ tQL8+epINgVEdOxgOEpMslYHKMBgc8yiaq215AULT10AHQ==
             });
           });
           $('#table-services').DataTable( {
-            "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+            "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ],
             "order": [[ 0, 'desc' ]],
             "columnDefs": [
               { "targets": [0], "orderable": true },
@@ -719,7 +719,7 @@ tQL8+epINgVEdOxgOEpMslYHKMBgc8yiaq215AULT10AHQ==
             $('#web-services').DataTable();
           });
           $('#web-services').DataTable( {
-            "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+            "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ],
             "order": [[ 0, 'desc' ]],
             "columnDefs": [
               { "targets": [0], "orderable": true },
@@ -768,7 +768,7 @@ tQL8+epINgVEdOxgOEpMslYHKMBgc8yiaq215AULT10AHQ==
             $('#table-product-versions').DataTable();
           });
           $('#table-product-versions').DataTable({
-            "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+            "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ],
             "order": [[ 0, 'asc' ], [1, 'asc' ]],  // Product, then Version
             dom: 'lBfrtip',
             stateSave: true,
@@ -784,7 +784,7 @@ tQL8+epINgVEdOxgOEpMslYHKMBgc8yiaq215AULT10AHQ==
           $(function () {
             if ($('#table-ssh-auth').length) {
               $('#table-ssh-auth').DataTable({
-                lengthMenu: [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+                lengthMenu: [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ],
                 order: [[0, 'asc'], [2, 'asc']], // Host, then Port
                 columnDefs: [
                   { targets: 1, type: 'ip-address' } // IP column
@@ -801,6 +801,26 @@ tQL8+epINgVEdOxgOEpMslYHKMBgc8yiaq215AULT10AHQ==
               });
             }
           });
+        </script><script>
+          
+            $(function () {
+              $('.panel-heading.clickable').on('click', function (e) {
+                var sel = '';
+
+                if (window.getSelection) {
+                  sel = window.getSelection().toString();
+                } else if (document.selection && document.selection.type !== 'Control') {
+                  sel = document.selection.createRange().text;
+                }
+
+                // If user has selected text (e.g. an IP), do NOT toggle collapse
+                if (sel && sel.length > 0) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+              });
+            });
+          
         </script>
 </body>
 </html>
