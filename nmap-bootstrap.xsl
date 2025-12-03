@@ -32,6 +32,32 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
            match="nmaprun/host/ports/port[state/@state='open']/service[@name='ssh']"
            use="1"/>
 
+  <!-- Product|Version groups derived from HTTP titles like 'Apache Tomcat/7.0.54' -->
+  <xsl:key name="httpTitleByProdVer"
+           match="nmaprun/host/ports/port[state/@state='open' and @protocol='tcp']
+                  /script[@id='http-title']/elem[@key='title'][contains(normalize-space(.), '/')]"
+           use="concat(
+                  substring-before(normalize-space(.), '/'),
+                  '|',
+                  substring-after(normalize-space(.), '/')
+               )"/>
+
+  <!-- Distinct Product|Version|Host|Port groups for HTTP-title based entries -->
+  <xsl:key name="httpTitleByProdVerHostPort"
+           match="nmaprun/host/ports/port[state/@state='open' and @protocol='tcp']
+                  /script[@id='http-title']/elem[@key='title'][contains(normalize-space(.), '/')]"
+           use="concat(
+                  substring-before(normalize-space(.), '/'),
+                  '|',
+                  substring-after(normalize-space(.), '/'),
+                  '|',
+                  ancestor::host/address/@addr,
+                  '|',
+                  ancestor::port[1]/@protocol,
+                  '|',
+                  ancestor::port[1]/@portid
+               )"/>           
+
   <xsl:template match="/">
     <html lang="en">
       <head>
@@ -95,7 +121,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
               let content = document.getElementById('table-services').innerHTML;
               document.getElementById('table-services').innerHTML = transformContent(content, keywords)
               $('#table-services').DataTable( {
-              "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+              "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ],
               "order": [[ 0, 'desc' ]],
               "columnDefs": [
                 { "targets": [0], "orderable": true },
@@ -773,7 +799,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
             });
           });
           $('#table-services').DataTable( {
-            "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+            "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ],
             "order": [[ 0, 'desc' ]],
             "columnDefs": [
               { "targets": [0], "orderable": true },
@@ -813,7 +839,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
             $('#web-services').DataTable();
           });
           $('#web-services').DataTable( {
-            "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+            "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ],
             "order": [[ 0, 'desc' ]],
             "columnDefs": [
               { "targets": [0], "orderable": true },
@@ -864,7 +890,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
             $('#table-product-versions').DataTable();
           });
           $('#table-product-versions').DataTable({
-            "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+            "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ],
             "order": [[ 0, 'asc' ], [1, 'asc' ]],  // Product, then Version
             dom: 'lBfrtip',
             stateSave: true,
@@ -881,7 +907,7 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
           $(function () {
             if ($('#table-ssh-auth').length) {
               $('#table-ssh-auth').DataTable({
-                lengthMenu: [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+                lengthMenu: [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ],
                 order: [[0, 'asc'], [2, 'asc']], // Host, then Port
                 columnDefs: [
                   { targets: 1, type: 'ip-address' } // IP column
@@ -898,6 +924,27 @@ Andreas Hontzia (@honze_net) & LRVT (@l4rm4nd)
               });
             }
           });
+        </script>
+        <script>
+          <![CDATA[
+            $(function () {
+              $('.panel-heading.clickable').on('click', function (e) {
+                var sel = '';
+
+                if (window.getSelection) {
+                  sel = window.getSelection().toString();
+                } else if (document.selection && document.selection.type !== 'Control') {
+                  sel = document.selection.createRange().text;
+                }
+
+                // If user has selected text (e.g. an IP), do NOT toggle collapse
+                if (sel && sel.length > 0) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+              });
+            });
+          ]]>
         </script>
       </body>
     </html>
